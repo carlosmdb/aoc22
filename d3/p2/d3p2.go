@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"sort"
 )
@@ -129,12 +128,25 @@ func (team *group) find_group_common_value() {
 	}
 }
 
-func main() {
-	file, err := os.Open("d3/puzzle_input.txt")
+func readFile(fileName string) ([]string, error) {
+	output := make([]string, 0)
+	file, err := os.Open(fileName)
 	if err != nil {
-		log.Fatal(err)
+		return output, err
 	}
-	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		output = append(output, scanner.Text())
+	}
+	err = file.Close()
+	if err != nil {
+		return output, err
+	}
+	return output, nil
+}
+
+func main() {
+	puzzle, _ := readFile("d3/puzzle_input.txt")
 
 	rucksacks := make([]rucksack, 0)
 	tribe := make([]group, 0)
@@ -142,13 +154,7 @@ func main() {
 	team := group{}
 	count := 0
 
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		if err != nil {
-			log.Fatal(err)
-		}
+	for _, line := range puzzle {
 		//fmt.Println("value is ", line)
 		ruck := rucksack{
 			first:  []rune(line[:(len(line) / 2)]),
