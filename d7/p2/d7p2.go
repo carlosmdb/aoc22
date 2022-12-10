@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -40,25 +41,42 @@ type object struct {
 	totalSize int
 }
 
+func findDirToDelete(root *object, spaceNeeded int) int {
+	queue := make([]*object, 0)
+	queue = append(queue, root)
+
+	dirSizes := make([]int, 0)
+	for len(queue) > 0 {
+		currentDir := queue[0]
+		queue = queue[1:]
+		if currentDir.objType != FILE && currentDir.totalSize >= spaceNeeded {
+			dirSizes = append(dirSizes, currentDir.totalSize)
+		}
+		if len(currentDir.children) > 0 {
+			queue = append(queue, currentDir.children...)
+		}
+	}
+
+	sort.Ints(dirSizes)
+
+	return dirSizes[0]
+}
+
 func getTotalSizes(root *object) int {
 	queue := make([]*object, 0)
 	queue = append(queue, root)
-	total := 0
 	for len(queue) > 0 {
 		currentObj := queue[0]
 		queue = queue[1:]
 		if currentObj.objType != FILE {
 			currentObj.totalSize = calculateDirSize(currentObj)
-			if currentObj.totalSize <= 100000 {
-				total += currentObj.totalSize
-			}
 		}
 		if len(currentObj.children) > 0 {
 			queue = append(queue, currentObj.children...)
 		}
 	}
 
-	return total
+	return root.totalSize
 }
 
 func calculateDirSize(root *object) int {
@@ -174,6 +192,17 @@ func main() {
 		}
 	}
 
+	totalFS := 70000000
+	needFree := 30000000
+	totalUsed := getTotalSizes(&root)
+	totalFree := totalFS - totalUsed
+	needed := needFree - totalFree
 	printFilesystem(&root)
-	fmt.Println(getTotalSizes(&root))
+	fmt.Println("Total used:", totalUsed)
+	fmt.Println("Total free:", totalFree)
+	fmt.Println("Total needed:", needed)
+
+	dir := findDirToDelete(&root, needed)
+	fmt.Println(dir)
+
 }
