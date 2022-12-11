@@ -57,14 +57,13 @@ func main() {
 		n, _ := strconv.Atoi(string(strings.Split(line, " ")[1]))
 
 		for i := 0; i < n; i++ {
-			oldPos := rope.head
 			if move == "U" {
 				rope.head.x++
 
 				if rope.head.x > rope.tail.x+1 {
 					rope.tail.x++
-					if rope.head.x != rope.tail.x || rope.head.y != rope.tail.y {
-						rope.tail = oldPos
+					if rope.head.y != rope.tail.y {
+						rope.tail.y = rope.head.y
 					}
 				}
 
@@ -73,8 +72,8 @@ func main() {
 
 				if rope.head.x < rope.tail.x-1 {
 					rope.tail.x--
-					if rope.head.x != rope.tail.x || rope.head.y != rope.tail.y {
-						rope.tail = oldPos
+					if rope.head.y != rope.tail.y {
+						rope.tail.y = rope.head.y
 					}
 				}
 
@@ -82,8 +81,8 @@ func main() {
 				rope.head.y--
 				if rope.head.y < rope.tail.y-1 {
 					rope.tail.y--
-					if rope.head.x != rope.tail.x || rope.head.y != rope.tail.y {
-						rope.tail = oldPos
+					if rope.head.x != rope.tail.x {
+						rope.tail.x = rope.head.x
 					}
 				}
 
@@ -92,8 +91,8 @@ func main() {
 
 				if rope.head.y > rope.tail.y+1 {
 					rope.tail.y++
-					if rope.head.x != rope.tail.x || rope.head.y != rope.tail.y {
-						rope.tail = oldPos
+					if rope.head.x != rope.tail.x {
+						rope.tail.x = rope.head.x
 					}
 				}
 
