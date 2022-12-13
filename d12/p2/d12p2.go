@@ -125,5 +125,6 @@ func bfs(area [][]rune, start position, end position) int {
 		}
 	}
 
+	// couldn't reach end position
 	return -1
 }
