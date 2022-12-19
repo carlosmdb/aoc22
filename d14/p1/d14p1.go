@@ -204,16 +204,6 @@ func (c *Cavern) AddSand() bool {
 	c.sand = append(c.sand, restPos)
 	//c.PrintMap()
 
-	for i := 0; i < len(c.sand); i++ {
-		v := c.sand[0]
-		c.sand = c.sand[1:]
-		restPos = c.MoveSand(v)
-		c.sand = append(c.sand, restPos)
-		/* if v != restPos {
-			c.PrintMap()
-		} */
-	}
-
 	return true
 }
 
