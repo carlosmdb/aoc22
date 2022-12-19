@@ -72,19 +72,6 @@ func (l *Lines) GetPointType(p Point) string {
 	return "."
 }
 
-func (l *Lines) Print() {
-	edges := l.GetEdges()
-
-	for y := edges.minY; y <= edges.maxY; y++ {
-		for x := edges.minX; x <= edges.maxX; x++ {
-
-			pointType := l.GetPointType(Point{x: x, y: y})
-			fmt.Printf(pointType)
-		}
-		fmt.Printf("\n")
-	}
-}
-
 func readFile(fileName string) ([]string, error) {
 	output := make([]string, 0)
 	file, err := os.Open(fileName)
