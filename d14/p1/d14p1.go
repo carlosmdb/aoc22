@@ -130,80 +130,91 @@ func (c *Cavern) PrintMap() {
 	}
 }
 
-func (c *Cavern) NewSand(sand Point) {
-	atRest := false
-	for y := c.edges.minY; y <= c.edges.maxY && !atRest; y++ {
+func (c *Cavern) MoveSand(sand Point) Point {
+	moved := true
+	restPos := sand
+
+	for y := sand.y; y <= c.edges.maxY && moved; y++ {
+		moved = false
+		originalPos := sand
+		// down
+		sand.y++
+
+		if sand.y > c.edges.maxY {
+			fmt.Println("into abyss", len(c.sand))
+			return Point{x: -1, y: -1}
+		}
+
 		switch c.m[sand] {
-		case ".":
-			sand.y++
 		case "#":
-			point := Point{x: sand.x, y: y}
-			c.m[point] = "o"
-			c.sand = append(c.sand, point)
-			atRest = true
 		case "o":
+		case ".":
+			c.m[sand] = "o"
+			restPos = sand
+			c.m[originalPos] = "."
+			moved = true
+		}
+
+		if !moved {
 			// down and left
 			sand.x--
 
-			if c.m[sand] == "." {
+			if sand.x < c.edges.minX {
+				fmt.Println("into abyss", len(c.sand))
+				return Point{x: -1, y: -1}
+			}
+
+			switch c.m[sand] {
+			case "#":
+			case "o":
+			case ".":
 				c.m[sand] = "o"
-				c.sand = append(c.sand, sand)
-				atRest = true
-			} else {
+				restPos = sand
+				c.m[originalPos] = "."
+				moved = true
+			}
+
+			if !moved {
 				// down and right
-
 				sand.x += 2
-				if c.m[sand] == "." {
+				switch c.m[sand] {
+				case "#":
+				case "o":
+				case ".":
 					c.m[sand] = "o"
-					c.sand = append(c.sand, sand)
-					atRest = true
-				} else {
-					sand.y--
-					sand.x--
-					c.m[sand] = "o"
-					atRest = true
+					restPos = sand
+					c.m[originalPos] = "."
+					moved = true
 				}
-
 			}
 		}
 
 	}
+	return restPos
 }
 
-func (c *Cavern) MoveSand(sand Point) {
-	atRest := false
-	for y := sand.y; y <= c.edges.maxY && !atRest; y++ {
-
-		// down and left
-		sand.y++
-		sand.x--
-
-		if c.m[sand] == "." {
-			c.m[sand] = "o"
-			atRest = true
-		} else {
-			// down and right
-			sand.x += 2
-			if c.m[sand] == "." {
-				c.m[sand] = "o"
-				atRest = true
-			}
-
-		}
-
-	}
-}
-
-func (c *Cavern) AddSand() {
+func (c *Cavern) AddSand() bool {
 	sand := c.source
 	sand.y++
 
-	for _, v := range c.sand {
-		c.MoveSand(v)
+	restPos := c.MoveSand(sand)
+	if restPos.x == -1 {
+		return false
+	}
+	c.sand = append(c.sand, restPos)
+	//c.PrintMap()
+
+	for i := 0; i < len(c.sand); i++ {
+		v := c.sand[0]
+		c.sand = c.sand[1:]
+		restPos = c.MoveSand(v)
+		c.sand = append(c.sand, restPos)
+		/* if v != restPos {
+			c.PrintMap()
+		} */
 	}
 
-	c.NewSand(sand)
-	c.PrintMap()
+	return true
 }
 
 func main() {
@@ -230,9 +241,6 @@ func main() {
 		lines = append(lines, line)
 	}
 
-	// fmt.Println(lines)
-	// lines.Print()
-
 	edges := lines.GetEdges()
 	initMap(m, &lines, edges)
 	m[source] = "+"
@@ -243,7 +251,8 @@ func main() {
 		source: source,
 	}
 
-	for i := 0; i < 7; i++ {
-		cavern.AddSand()
+	cont := true
+	for ok := true; ok; ok = cont {
+		cont = cavern.AddSand()
 	}
 }
