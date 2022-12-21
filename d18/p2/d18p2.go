@@ -33,13 +33,8 @@ type Volcano struct {
 	m                      map[Cube]struct{}
 }
 
-type CubeFaces struct {
-	xy1, xy2, yz1, yz2, xz1, xz2 bool
-}
-
 type Cube struct {
 	x, y, z int
-	conn    CubeFaces
 }
 
 func Abs(x int) int {
