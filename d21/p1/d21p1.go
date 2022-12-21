@@ -64,13 +64,12 @@ func getMonkeyYell(name string, monkeys map[string]Monkey) int {
 }
 
 func getN(monkeys map[string]Monkey) {
-	for _, m := range monkeys {
-		if m.n == 0 {
-			n := getMonkeyYell(m.name, monkeys)
-			m.n = n
-			monkeys[m.name] = m
-		}
-	}
+	m := monkeys["root"]
+
+	n := getMonkeyYell(m.name, monkeys)
+	m.n = n
+	monkeys[m.name] = m
+
 }
 
 func main() {
