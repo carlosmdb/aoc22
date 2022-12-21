@@ -60,12 +60,21 @@ var (
 	}
 )
 
-func getNeighbours(c Cube) []Cube {
+func getNeighbours(c Cube, v Volcano) []Cube {
 	var neighbours []Cube
 
 	for _, mov := range moves {
 		next := Cube{x: c.x + mov.x, y: c.y + mov.y, z: c.z + mov.z}
-		neighbours = append(neighbours, next)
+
+		// cube is within bounds
+		if next.x >= -v.size.x &&
+			next.x <= v.sizeMax.x+v.size.x &&
+			next.y >= -v.size.y &&
+			next.y <= v.sizeMax.y+v.size.y &&
+			next.z >= -v.size.z &&
+			next.z <= v.sizeMax.z+v.size.z {
+			neighbours = append(neighbours, next)
+		}
 	}
 
 	return neighbours
@@ -80,28 +89,19 @@ func bfs(cube Cube, v Volcano) int {
 		queue = queue[1:]
 
 		// get neighbours
-		n := getNeighbours(curr)
+		n := getNeighbours(curr, v)
 		for _, next := range n {
 
 			// not visited yet
 			if _, ok := visited[next]; !ok {
-
 				// cube exists
 				if _, ok := v.m[next]; ok {
 					// not an air pocket
 					total++
 				} else {
-					// cube is within bounds
-					if next.x >= -v.size.x &&
-						next.x <= v.sizeMax.x+v.size.x &&
-						next.y >= -v.size.y &&
-						next.y <= v.sizeMax.y+v.size.y &&
-						next.z >= -v.size.z &&
-						next.z <= v.sizeMax.z+v.size.z {
-						// add to visited
-						visited[next] = struct{}{}
-						queue = append(queue, next)
-					}
+					// add to visited
+					visited[next] = struct{}{}
+					queue = append(queue, next)
 				}
 			}
 		}
