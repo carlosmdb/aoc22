@@ -67,11 +67,11 @@ func getNeighbours(c Cube, v Volcano) []Cube {
 		next := Cube{x: c.x + mov.x, y: c.y + mov.y, z: c.z + mov.z}
 
 		// cube is within bounds
-		if next.x >= -v.size.x &&
+		if next.x >= v.sizeMin.x-v.size.x &&
 			next.x <= v.sizeMax.x+v.size.x &&
-			next.y >= -v.size.y &&
+			next.y >= v.sizeMin.y-v.size.y &&
 			next.y <= v.sizeMax.y+v.size.y &&
-			next.z >= -v.size.z &&
+			next.z >= v.sizeMin.z-v.size.z &&
 			next.z <= v.sizeMax.z+v.size.z {
 			neighbours = append(neighbours, next)
 		}
